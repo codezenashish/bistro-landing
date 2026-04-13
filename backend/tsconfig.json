@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     // Environment setup & latest features
+    "typeRoots": ["./node_modules/@types", "./src/@types"],
     "lib": ["ESNext"],
     "target": "ESNext",
     "module": "Preserve",
@@ -25,5 +26,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "include": ["src/**/*", "src/@types/globle.d.ts"]
 }
