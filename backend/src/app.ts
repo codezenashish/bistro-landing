@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 const REQUEST_BODY_SIZE_LIMIT: string = "10kb";
 const STATIC_FILE_DIR: string = "public";
@@ -11,11 +12,12 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+  })
 );
 
 app.use(express.json({ limit: REQUEST_BODY_SIZE_LIMIT }));
 app.use(express.urlencoded({ limit: REQUEST_BODY_SIZE_LIMIT }));
 app.use(express.static(STATIC_FILE_DIR));
+app.use(cookieParser());
 
-export default app;
+export  {app};
