@@ -20,4 +20,9 @@ app.use(express.urlencoded({ limit: REQUEST_BODY_SIZE_LIMIT }));
 app.use(express.static(STATIC_FILE_DIR));
 app.use(cookieParser());
 
-export  {app};
+// routes declaration
+import userRouter from "./routes/user.routes";
+
+app.use("/api/v1/user", userRouter);
+
+export { app };
