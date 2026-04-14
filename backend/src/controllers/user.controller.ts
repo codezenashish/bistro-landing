@@ -5,7 +5,7 @@ import { User } from "../models/user.model";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 import { uploadOnCloudinary } from "../services/cloudinary";
-import userRouter from "../routes/user.routes";
+
 
 interface RefreshTokenPayload extends JwtPayload {
   _id: string;
@@ -32,7 +32,7 @@ const generateAccessAndRefreshToken = async (userID: any) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { fullName, email, username, password, phoneNumber } = req.body;
+  const { fullName, email, username, password, phoneNumber,role } = req.body;
 
   if (
     [fullName, email, username, password, phoneNumber].some(
@@ -66,6 +66,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     phoneNumber,
     password,
+    role,
     username: username.toLowerCase(),
   });
 
