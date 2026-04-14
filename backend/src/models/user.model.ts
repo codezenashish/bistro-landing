@@ -10,6 +10,7 @@ export interface IUser extends Document {
   fullName: string;
   avatar: string;
   password: string;
+  role: "customer" | "admin";
   refreshToken?: string | null;
   orderHistory: mongoose.Types.ObjectId[];
   isPasswordValid(plainTextPass: string): Promise<boolean>;
@@ -51,6 +52,11 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: [true, "Password is required"],
+    },
+    role: {
+      type: String,
+      enum: ["customer", "admin"],
+      default: "customer",
     },
     refreshToken: {
       type: String,
