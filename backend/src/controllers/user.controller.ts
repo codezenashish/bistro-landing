@@ -5,6 +5,7 @@ import { User } from "../models/user.model";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 import { uploadOnCloudinary } from "../services/cloudinary";
+import userRouter from "../routes/user.routes";
 
 interface RefreshTokenPayload extends JwtPayload {
   _id: string;
@@ -158,4 +159,80 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "user logged out succesfully"));
 });
 
-export { generateAccessAndRefreshToken, registerUser, loginUser, logoutUser };
+const chnageCurrentPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.user?._id);
+
+  if (!user) {
+    throw new ApiError(404, "user not found");
+  }
+
+  const isPasswordCorrect = await user?.isPasswordValid(oldPassword);
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "invalid old password");
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+  return res.status(200).json(new ApiResponse(200, {}, "password chnaged"));
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
+});
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+  const { fullName, email } = req.body;
+
+  if (!fullName || !email) {
+    throw new ApiError(400, "all field are required");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        fullName,
+        email: email,
+      },
+    },
+    { returnDocument: "after" }
+  ).select("-password");
+  return res.status(200).json(new ApiResponse(200, user, "account details"));
+});
+
+const updateAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.path;
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "avatar file is required");
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  if (!avatar) {
+    throw new ApiError(400, "avatar file is required");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        avatar: avatar.url,
+      },
+    },
+    { returnDocument: "before" }
+  ).select("-password");
+  return res.status(200).json(new ApiResponse(200, user, "avatar updated"));
+});
+
+export {
+  generateAccessAndRefreshToken,
+  registerUser,
+  loginUser,
+  logoutUser,
+  chnageCurrentPassword,
+  getCurrentUser,
+  updateAccountDetails,
+  updateAvatar,
+};
