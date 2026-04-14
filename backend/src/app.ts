@@ -22,7 +22,9 @@ app.use(cookieParser());
 
 // routes declaration
 import userRouter from "./routes/user.routes";
+import menuRoute from "./routes/menu.routes";
 
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/menu", menuRoute);
 
 export { app };
